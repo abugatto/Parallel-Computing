@@ -11,6 +11,11 @@ const int NSTEPS = 1000;
 const int SAVEFREQ = 10;
 
 //
+//Adjacencies: Left, Right, Top, Bottom, Left top, Left bottom, right top, right bottom
+//
+enum ADJ = {L, R, T, B, LT, LB, RT, RB};
+
+//
 // particle data structure
 //
 typedef struct 
@@ -33,6 +38,8 @@ double read_timer( );
 //
 void set_size( int n );
 void init_particles( int n, particle_t *p );
+void get_block(int& block_num, int* blocks, particle_t& particle, int& idx);
+bool adjacent_ghosts(int& block_num, bool* adj[n], int* blocks, double& ghostbnd, particle_t* particles, int& i, int& j);
 void apply_force( particle_t &particle, particle_t &neighbor , double *dmin, double *davg, int *navg);
 void move( particle_t &p );
 

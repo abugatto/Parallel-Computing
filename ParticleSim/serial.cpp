@@ -9,8 +9,8 @@
 //
 int main( int argc, char **argv )
 {    
-    int navg,nabsavg=0;
-    double davg,dmin, absmin=1.0, absavg=0.0;
+    int navg,nabsavg=0, block_num=4;
+    double davg,dmin, absmin=1.0, absavg=0.0, ghostbnd = .04;
 
     if( find_option( argc, argv, "-h" ) >= 0 )
     {
@@ -45,14 +45,69 @@ int main( int argc, char **argv )
 	navg = 0;
         davg = 0.0;
 	dmin = 1.0;
+
+        //init blocks array
+        int blocks[n];
+        for(int i = 0; i < n; i++) {
+            blocks[i] = -1;
+        }
+
+        // //init adjacency matrix
+        // int adj[n][n];
+        // for(int i = 0; i < n; i++) {
+        //     for(int j = 0; j < n; j++) {
+        //         if(i != j) {
+        //             //check for adjacencies
+        //             bool hadj = (j == i-1) && (j % n != 0);
+        //             bool vadj = 
+        //             bool 
+        //             if(adjacent) {
+        //                 adj[i][j] = 1;
+        //                 adj[j][i] = 1;
+        //             } else {
+        //                 adj[i][j] = 0;
+        //                 adj[j][i] = 0;
+        //             }
+        //         } else {
+        //             adj[i][j] = 0;
+        //             adj[j][i] = 0;
+        //         }
+        //     }
+        // }
+
+        // //print
+        // std::cout << std::endl;
+        // for(int i = 0; i < n; i++) {
+        //     for(int j = 0; j < n; j++) {
+        //         std::cout << adj[i][j];
+
+        //         if(j == n-1) {
+        //             std::cout << " ";
+        //         }
+        //     }
+
+        //     std::cout << std::endl;
+        // }
+
         //
         //  compute forces
         //
-        for( int i = 0; i < n; i++ )
-        {
+        for( int i = 0; i < n; i++ ) {
             particles[i].ax = particles[i].ay = 0;
-            for (int j = 0; j < n; j++ )
-				apply_force( particles[i], particles[j],&dmin,&davg,&navg);
+            get_block(blocks, particles[i], i);
+
+            for (int j = 0; j < n; j++ ) {
+                get_block(block_num, blocks, particles[i], j);
+
+                if(blocks[i] == blocks[j]) {
+				    apply_force( particles[i], particles[j],&dmin,&davg,&navg);
+                } 
+                // else {
+                //     if(adjacent_ghosts(block_num, &adj, blocks, ghostbnd, particles, i, j)) {
+                //         apply_force( particles[i], particles[j],&dmin,&davg,&navg);
+                //     }
+                // }
+            }
         }
  
         //
