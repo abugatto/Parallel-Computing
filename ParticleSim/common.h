@@ -13,7 +13,7 @@ const int SAVEFREQ = 10;
 //
 //Adjacencies: Left, Right, Top, Bottom, Left top, Left bottom, right top, right bottom
 //
-enum ADJ = {L, R, T, B, LT, LB, RT, RB};
+enum ADJ {L, R, T, B, LT, LB, RT, RB};
 
 //
 // particle data structure
