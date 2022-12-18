@@ -1,0 +1,35 @@
+function [part1,part2] = bisection_spectral(A,xy,picture)
+% bisection_spectral : Spectral partition of a graph.
+%
+% D.P & O.S for the "HPC Course" at USI and
+%                   "HPC Lab for CSE" at ETH Zuric
+%
+% [part1,part2] = bisection_spectral(A) returns a partition of the n vertices
+%                 of A into two lists part1
+% and part2 according to the
+%                 spectral bisection algorithm of Simon et al:
+%                 Label the vertices with the components of the Fiedler vector
+%                 (the second eigenvector of the Laplacian matrix) and partition
+%                 them around the median value or 0.
+
+disp(' ');
+disp(' HPC Lab at USI:   ');
+disp(' Implement spectral bisection');
+disp(' ');
+
+% Steps
+% 1. Construct the Laplacian.
+L = diag(sum(A,2)) - A;
+
+% 2. Calculate its eigensdecomposition.
+[Vecs,Vals] = eigs(L,2,'smallestabs');
+FiedlerVal = Vals(2,2);
+FiedlerVec = Vecs(:,2);
+
+% 3. Label the vertices with the components of the Fiedler vector.
+
+
+% 4. Partition them around their median value, or 0.
+
+
+end

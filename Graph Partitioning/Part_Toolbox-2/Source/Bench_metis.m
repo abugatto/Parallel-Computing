@@ -1,0 +1,68 @@
+function [cut_recursive,cut_kway] = Bench_metis()
+    % Compare recursive bisection and direct k-way partitioning,
+    % as implemented in the Metis 5.0.2 library.
+    
+    %  Add necessary paths
+    addpaths_GP;
+    
+    % Graphs in question
+    % load usroads;
+    % load luxembourg_osm;
+    
+    % Steps
+    % 1. Initialize the cases
+    cases = {
+        'luxembourg_osm.mat';
+        'usroads.mat';
+        'GR-3117.mat';
+        'CH-4468.mat';
+        'VN-4031.mat';
+        'NO-9935.mat';
+        'RU-40527.mat';
+    };
+    
+    clear Adj;
+    clear Coords;
+    for c = 1:length(cases)
+        cas = load(cases{c});
+        if strcmp(cases{c}, 'luxembourg_osm.mat') || strcmp(cases{c}, 'usroads.mat')
+            Adj{c} = cas.Problem.A;
+            Coords{c} = cas.Problem.aux.coord;
+        else
+            Adj{c} = cas.W;
+            Coords{c} = cas.C;
+        end
+    end
+    
+    % 2. Call metismex to
+    for c = 1:length(cases)
+        W = sparse(double(Adj{c}));
+        xy = Coords{c};
+        opts.dbglvl = 10;
+    
+        %     a) Recursively partition the graphs in 16 and 32 subsets.
+        [r16, cutR16] = metismex('PartGraphRecursive', W, 16, opts);
+        [r32, cutR32] = metismex('PartGraphRecursive', W, 32, opts);
+    
+        %     b) Perform direct k-way partitioning of the graphs in 16 and 32 subsets.
+        [k16, cutK16] = metismex('PartGraphKway', W, 16, opts);
+        [k32, cutK32] = metismex('PartGraphKway', W, 32, opts);
+    
+        % 3. Visualize the results for 32 partitions.
+        fprintf('%s . . . %6d %10d %6d %10d \n', cases{c}, cutR16, cutR32, cutK16, cutK32);
+
+        if strcmp(cases{c},'usroads.mat') || strcmp(cases{c},'luxembourg_osm.mat') || strcmp(cases{c},'RU-40527.mat')
+            gplotmap(W, xy, r32);
+            title(strcat(cases{c}, ' : recursive(32)'));
+            set(gcf, 'InvertHardCopy', 'off'); 
+            set(gcf,'Color',[0 0 0]);
+            saveas(gcf, strcat(cases{c}, '-recursive-32', '.png'))
+
+            gplotmap(W, xy, k32);
+            title(strcat(cases{c}, ' : k-way(32)'));
+            set(gcf, 'InvertHardCopy', 'off'); 
+            set(gcf,'Color',[0 0 0]);
+            saveas(gcf, strcat(cases{c}, '-kway-32', '.png'))
+        end
+    end
+end
